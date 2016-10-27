@@ -1,0 +1,32 @@
+import sys  # manage outpouts
+import hashlib  # hash the password and encrypt it
+import pickle  # serialization of the database
+
+database = {} # create a database as a dictionnary with passwords encrypted for keys
+
+if len(sys.argv) < 3:
+    print('[Usage] python manager.py <username> <password>')
+    sys.exit()
+
+username = sys.argv[1]
+password = (sys.argv[2].encode())
+
+password = hashlib.sha1(password).hexdigest()
+database[username] = password
+
+with open('database.pickle', 'ab') as file:
+    my_pickler = pickle.Pickler(file)
+    my_pickler.dump(database)
+
+def database_loader():
+    with open('database.pickle', 'rb') as file:
+        while True:
+            try:
+                loaded = pickle.load(file)
+                print(loaded)
+            except EOFError:
+                break
+            else:
+                database.update(loaded)
+
+database_loader()
